@@ -1,0 +1,17 @@
+{
+  "version": "0.1",
+  "name": "MN Weather",
+  "description": "My Simple Open Web Weather App",
+  "launch_path": "/index.html",
+  "icons": {
+    "16": "/images/icon-16.png",
+    "48": "/images/icon-48.png",
+    "128": "/images/icon-128.png",
+    "512": "/images/icon-512.png"
+  },
+  "developer": {
+    "name": "Marleny Nunez",
+    "url": "http://marlenynunez.com/weather/"
+  },
+  "default_locale": "en"
+}

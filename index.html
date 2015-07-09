@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Open Web Simple Weather App.">
+
+    <title>Weather App</title>
+
+<link rel="stylesheet" href="css/pure-min.css">
+<link rel="stylesheet" href="css/grids-responsive-min.css">
+<link rel="stylesheet" href="css/font-awesome.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/layouts/marketing.css">
+<script src="js/jquery-1.11.3.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20u%20%3D%20%22c%22%20and%20woeid%20%3D%202972&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
+        var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20u%20%3D%20%22c%22%20and%20woeid%20%3D%202972&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
+
+        var channel = {};
+
+        var manager = function(channel) {
+
+            var showTemp = function(channel) {
+                var cond = channel.item.condition,
+                    cond_temp = cond.temp,
+                    cond_text = cond.text,
+                    cond_date = cond.date;
+
+                $('#condition_temp').text(cond_temp + '°C');
+                $('#condition_text').text(cond_text);
+                $('#condition_text').text(cond_date);
+                
+                return;
+            };
+
+            var showForecast = function(channel) {
+                var cond = channel.item.forecast[1],
+                    cond_low = cond.low,
+                    cond_high = cond.high,
+                    cond_date = cond.date,
+                    cond_day = cond.day,
+                    cond_text = cond.text;
+
+                $('#condition_temp').text(cond_low + '°C/' + cond_high + '°C');
+                $('#condition_text').html(cond_text + '<br>' + cond_day + ', ' + cond_date);
+                return false;
+            };
+
+            showTemp(channel);
+
+            $('.chk_today').on('click', function(e) {
+                e.preventDefault();
+                return showTemp(channel);
+            });
+
+            $('.chk_tomorrow').click(function(e) {
+                e.preventDefault();
+                return showForecast(channel);
+            });
+
+            $('.chk_full').click(function(e) {
+                e.preventDefault();
+                // $('#condition_temp').html('');
+                var channel_wind = '<table class="pure-table"><thead><tr><th>Chill</th><th>Speed</th></tr></thead><tbody><tr><td>' + channel.wind.chill + '</td><td>' + channel.wind.speed + channel.units.speed + '</td></tr></tbody></table>';
+                $('#condition_text').html(channel_wind);
+                // $('#condition_temp').html(channel.item.description);
+            });
+        };
+
+        $.ajax({
+            url: url,
+            async: true,
+            dataType: 'json',
+            success: function(data) {
+                console.info(data);
+                manager(data.query.results.channel);
+            }
+        });
+
+    });
+</script>
+</head>
+<body>
+
+<div class="header">
+    <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+        <a class="pure-menu-heading" href="index.html">Weather</a>
+
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-selected"><a href="index.html" class="pure-menu-link chk_today">Today</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link chk_tomorrow">Tomorrow</a></li>
+            <li class="pure-menu-item"><a href="#" class="pure-menu-link chk_full">Full</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="splash-container">
+    <div class="splash">
+        <h1 class="splash-head" id="condition_temp">...</h1>
+        <div class="splash-subhead" id="condition_text">Loading ...</div>
+        <p>
+            <a href="#" class="pure-button pure-button-primary chk_tomorrow">Tomorrow</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
